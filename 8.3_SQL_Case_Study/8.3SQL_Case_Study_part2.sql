@@ -18,17 +18,22 @@ QUESTIONS:
 The output of facility name and total revenue, sorted by revenue. Remember
 that there's a different cost for guests and members! */
 
-        SELECT name, total_revenue
+        SELECT * 
         FROM (
-            SELECT b.name,
-            SUM(CASE WHEN b.memid = 0 THEN f.guestcost * b.slots ELSE f.membercost * b.slots END ) AS total_revenue
-            FROM Bookings AS b
-            JOIN Facilities AS f ON b.facid = f.facid
-            GROUP BY f.name
-            ) 
-        AS facilities_revenue
-        WHERE total_revenue < 1000
-        ORDER BY total_revenue;
+            SELECT sub.facility, SUM(sub.cost) AS total_revenue
+            FROM (
+                SELECT Facilities.name AS facility, 
+                CASE WHEN Bookings.memid =0
+                THEN Facilities.guestcost * Bookings.slots
+                ELSE Facilities.membercost * Bookings.slots
+                END AS cost
+                FROM Bookings
+                INNER JOIN Facilities ON Bookings.facid = Facilities.facid
+                INNER JOIN Members ON Bookings.memid = Members.memid
+            )sub
+        GROUP BY sub.facility
+        )sub2
+        WHERE sub2.total_revenue <1000
 
 /* Q11: Produce a report of members and who recommended them in alphabetic surname,firstname order */
 
