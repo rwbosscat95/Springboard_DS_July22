@@ -112,3 +112,92 @@ plt.subplots_adjust(hspace=0.5);
 ```
 ![download](https://user-images.githubusercontent.com/50253416/234192119-90193b9e-b20c-4946-bb81-3cdfa5f7445a.png)
 
+Let us briefly look at the distribution of these variables.
+
+*tau1*, *tau2*, *tau3* and *tau4*: the reaction time of each network participant. They are even distribution from 0.5 to 10 and each data bin (0-1, 1-2, etc.) has about 6000 samples for each variables.
+
+*p2*, *p3*, and *p4*: nominal power consumed (negative) by each network participant. They are also even distribution from -2.0 to -0.5.
+
+*p1*: nominal power produced (positive). *p1=-(p2+p3+p4)*. It is approximately a normal distribution, which is able to be proved by the Central Limit Theorem. The mean is 3.75 and the standard deviation is 0.752. 
+
+*g1*, *g2*, *g3* and *g4*: price elasticity coefficient for each network participant. They are even distribution from 0 to 1 to impact the electricity price as Figure 2(a) and (b).
+
+*stab*:the maximum real part of the characteristic differentia equation root. If *stab* < 0, the grid is stable and *stabf* = "stable". If *stab* >= 0, the grid is unstable and *stabf* = "unstable". The range of stab is between -0.05 and 0.10.
+
+*stabf*:a categorical (binary) label ('stable' or 'unstable'). The binary label (*stabf* = 0 means "unstable" and *stabf* = 1 means "stable". From the plots above, there are 40,000 unstable cases (*stabf* = 0), almost twice than the stable cases.
+```
+# save the data for future use
+df.to_csv('../data/df_clean.csv')
+df1.to_csv('../data/df1_clean.csv')
+```
+
+# 3 Exploratory Data Analysis
+## 3.1 Inferential Statistics
+### 3.1.1 Overview of the dataset
+```
+# strip the column names to get rid of any pre and post white spaces
+stripped_name = [col.strip() for col in list(df.columns)]
+df.rename(columns=dict(zip(list(df.columns), stripped_name)), inplace=True)
+
+# verify the data type and missing values
+df.info()
+```
+Column *"stabf"* has been changed to int64 type with 0 and 1 to indicate "unstable" and "stable" cases. Other variables are float64 type data. There is no missing values in the dataset and all data are numeric type of data.
+### 3.1.2 Cleaning, transforming and visualizing
+```
+# Data are clean and concise. Plot the counts of "stab" cases
+sns.histplot(data=df['stab']);
+plt.vlines(x = 0, ymin = 0, ymax = 2000,
+           colors = 'purple',
+           label = 'Border of stable/unstable')
+plt.show()
+```
+![download (1)](https://user-images.githubusercontent.com/50253416/234194029-5850606e-427c-4eeb-8f7c-5caab3af8ece.png)![download (2)](https://user-images.githubusercontent.com/50253416/234194043-6711bdca-edf8-4d0c-a2d1-146de3e05e8d.png)
+```
+# To summarize analytically, let's use the groupby() method on our df.
+df.groupby(by = 'stabf').mean()
+```
+![2023-04-25 014210](https://user-images.githubusercontent.com/50253416/234194940-53a701f0-0bd9-4276-b918-fdf36a69390f.png)
+From the table above, we can see that *tau1, tau2, tau3, tau4* and *g1, g2, g3, g4* are siginificantly different for the unstable (*stabf*=0) and stable (*stabf*=1) cases. We also see slight differences of *p1, p2, p3, p4* in unstable (*stabf*=0) and stable (*stabf*=1) cases.
+```
+# Call the boxplot() method on our df based on tau.
+df.boxplot(by = 'stabf', column = ['tau1', 'tau2', 'tau3', 'tau4']);
+df.boxplot(by = 'stabf', column = ['p1', 'p2', 'p3', 'p4']);
+df.boxplot(by = 'stabf', column = ['g1', 'g2', 'g3', 'g4']);
+```
+
+![download (3)](https://user-images.githubusercontent.com/50253416/234195495-b5182ea3-02b1-4c8c-9235-f555929a9224.png)![download (4)](https://user-images.githubusercontent.com/50253416/234195510-f9efab60-5b7a-471f-bde4-7ecae5aaf6c1.png)
+![download (5)](https://user-images.githubusercontent.com/50253416/234195541-43e8eaf9-85df-452f-8fe0-0292a91869c6.png)
+
+From the first boxplot grouped by stabf for *tau1, tau2, tau3 and tau4*, the mean and the range (25%, 75%) of tau (reaction time) in unstable cases are significantly higher than those in the stable cases. There are the same trend for *g1, g2, g3 and g4* about the price impacts.<br />
+The normal power produced (*p1*) and the normal power consumed (*p2, p3, p4*) are not significantly different between the unstable and stable cases.<br />
+The impacts of these feature variables will be proved by hythesis analysis in the next section.
+# 3.2 Hypothesis Tests
+## 3.2.1 Null hypothesis of tau<sub>i</sub>
+**Hypothesis formulation**<br />
+Our Null hypothesis is:<br />
+H_null: the observed difference in the mean of tau_i (i=1,2,3,4) between the unstable cases and the stable cases is due to chance. That is,<br />
+tau<sub>i,u</sub> = tau<sub>i,s</sub>
+
+The alternate hypothesis:<br />
+H_alternative: there are significant difference (over the significance level 95%) between tau_i (i=1,2,3,4) in the unstable cases and the stable cases. That is,<br />
+tau<sub>i,u</sub> ≠ tau<sub>i,s</sub><br />
+
+**Calculate the p-value to do the hypothesis test**<br />
+```
+# check how many of the differences are at least as extreme as (95%) our observed differenc
+sum([(diff - obs_difference_tau1) > 0 for diff in difference_tau1]) / len(difference_tau1)
+```
+So actually, zero differences are at least as extreme as our observed difference!
+So the p-value of our observed data is 0.
+It doesn't matter which significance level we pick; our observed data is statistically significant, and we reject the **H<sub>Null</sub>** and accept **H<sub>Alternatative</sub>**.
+## 3.2.2 Null hypothesis of g<sub>i</sub>
+**Hypothesis formulation** <br />
+
+Our Null hypothesis is:<br />
+H_null: the observed difference in the mean of g_i (i=1,2,3,4) between the unstable cases and the stable cases is due to chance. That is, <br />
+g<sub>i,u</sub> = g<sub>i,s</sub>
+
+The alternate hypothesis:<br />
+H_alternative: there are significant difference (over the significance level 95%) between g_i (i=1,2,3,4) in the unstable cases and the stable cases. That is,<br />
+g<sub>i,u</sub> ≠ g<sub>i,s</sub>
