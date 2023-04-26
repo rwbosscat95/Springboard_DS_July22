@@ -378,7 +378,10 @@ For this basic 4-node star power grid, the ANN model has very good F1 score (acc
 1. More nodes of power plants and end users.
 2. Solar energy implementation in the commercial and residential users.
 3. More baterry-based electricity storage implementation.
-4. More flexible electricity price strategies
+4. More flexible electricity price strategies.<br />
+![electric-grid-test-case-repository-texas-electric-grid-map](https://user-images.githubusercontent.com/50253416/234467468-62342c1c-2048-4378-a3b8-18a346fb3f48.jpg)
+![pv_system](https://user-images.githubusercontent.com/50253416/234466834-3393481c-5a49-46af-92fe-8f830033f5b2.png)
+
 # 9. Reference
-[1] Towards Concise Models of Grid Stability. 2018 IEEE International Conference on Communications, Control, and Computing Technologies for Smart Grids.  Vadim Arzamasov, Klemens Böhm, Patrick Jochem.
+[1] Towards Concise Models of Grid Stability. 2018 IEEE International Conference on Communications, Control, and Computing Technologies for Smart Grids.  Vadim Arzamasov, Klemens Böhm, Patrick Jochem.<br />
 [2] Taming Instabilities in Power Grid Networks by Decentralized Control. The European Physical Journal, Special Topics, 225, 569–582 (2016). B. Schafer, C. Grabow, S. Auer, J. Kurths, D. Witthaut, and M. Timme.
