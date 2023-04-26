@@ -1,6 +1,6 @@
 # CAPSTONE3 - Application of Deep Learning for the Stability Prediction of the Smart Grids
 # 1 Introduction
-## 1.1 Problem Statement
+## 1.1 Problem statement
 Decentral Smart Grid Control (**DSGC**) is a new system implementing demand response without significant changes of the power grid infrastructure. It does so by binding the electricity price to the grid frequency, which is one of the most important factors of the power grid stability[1][2]. The theoretical model of the power grid system made some simplifications to monitor and control the operation of the power grids. With the development of data collection and data mining, it is possible to use deep learning methods to predict the stability of a four-node-star electrical grid with a centralized production system. This project will develop a deep learning model for this four-node-star electrical grid with a centralized production that the precision is more than 90% to predict the stability of this power grid.
 ## 1.2 Dataset
 The dataset, created by KIT, contains results from simulations of grid stability for a reference 4-node star power grid. This power grid system is the most common power grid system in the world. The original dataset contains 10,000 observations and includes 12 primary predictive features and two dependent variables. The parameters and status were recorded for about 2 months with a ten-minute interval, which include stable and unstable scenarios.
@@ -36,10 +36,10 @@ The DSGC differential equation-based mathematical model described in [1] and ass
 ![hvmW0cg](https://user-images.githubusercontent.com/50253416/234172747-d5212c62-4631-43b6-aebb-8f3df9aa2b03.png)
 **Figure 1: 4-node star power grid model**
 
-# 2 Data wrangling
-## 2.1 Data Collection
+# 2 Data Wrangling
+## 2.1 Data collection
 Goal: Read the raw data and investigate the data structure of data frame. 
-### 2.1.1 Import the Libraries
+### 2.1.1 Import the libraries
 
 ```
 # Import pandas, matplotlib.pyplot, and seaborn, datetime below
@@ -60,13 +60,13 @@ from keras.layers import Dense
 
 from datetime import datetime
 ```
-### 2.1.2 Load the Raw Data
+### 2.1.2 Load the raw data
 Read two datasets: one is the original dataset with 10,000 observations and the other is the augmented dataset with 60,000 observations that were permutated (3!=6) by the original dataset.
 ```
 df = pd.read_csv('../data/smart_grid_stability_augmented.csv')
 df1 = pd.read_csv('../data/Data_for_UCI_named.csv')
 ```
-### 2.1.3 Check the Raw Data
+### 2.1.3 Check the raw data
 There are 12 predictive features:
 
 *'tau1'* to *'tau4'*: the reaction time of each network participant. It is a real value within the range 0.5 to 10 (*'tau1'* corresponds to the supplier node, *'tau2'* to *'tau4'* to the consumer nodes) from the results of df.describe() above.
@@ -89,7 +89,7 @@ There are two dependent variables:
 *'stabf'*: a categorical (binary) label ('stable' or 'unstable').
 
 As there is a direct relationship between 'stab' and 'stabf' ('stabf' = 'stable' if 'stab' <= 0, 'unstable' otherwise), 'stab' will be dropped and 'stabf' will remain as the sole dependent variable.
-## 2.2 Data Definition
+## 2.2 Data definition
 Goal: Gain an understanding of your data features to inform the next steps of EDA.
 ### 2.2.1 Clean the dataframe
 As the dataset content comes from simulation exercises, there are no missing values. Also, all features are originally numerical, no feature coding is required. Such dataset properties allow for a direct jump to machine modeling without the need of data preprocessing or feature engineering.
@@ -132,7 +132,7 @@ df1.to_csv('../data/df1_clean.csv')
 ```
 
 # 3 Exploratory Data Analysis
-## 3.1 Inferential Statistics
+## 3.1 Inferential statistics
 ### 3.1.1 Overview of the dataset
 ```
 # strip the column names to get rid of any pre and post white spaces
@@ -172,7 +172,7 @@ df.boxplot(by = 'stabf', column = ['g1', 'g2', 'g3', 'g4']);
 From the first boxplot grouped by stabf for *tau1, tau2, tau3 and tau4*, the mean and the range (25%, 75%) of tau (reaction time) in unstable cases are significantly higher than those in the stable cases. There are the same trend for *g1, g2, g3 and g4* about the price impacts.<br />
 The normal power produced (*p1*) and the normal power consumed (*p2, p3, p4*) are not significantly different between the unstable and stable cases.<br />
 The impacts of these feature variables will be proved by hythesis analysis in the next section.
-# 3.2 Hypothesis Tests
+# 3.2 Hypothesis tests
 ## 3.2.1 Null hypothesis of tau<sub>i</sub>
 **Hypothesis formulation**<br />
 Our Null hypothesis is:<br />
