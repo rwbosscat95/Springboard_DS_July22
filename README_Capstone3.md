@@ -195,9 +195,190 @@ It doesn't matter which significance level we pick; our observed data is statist
 **Hypothesis formulation** <br />
 
 Our Null hypothesis is:<br />
-H_null: the observed difference in the mean of g_i (i=1,2,3,4) between the unstable cases and the stable cases is due to chance. That is, <br />
+H_null: the observed difference in the mean of g<sub>i</sub> (i=1,2,3,4) between the unstable cases and the stable cases is due to chance. That is, <br />
 g<sub>i,u</sub> = g<sub>i,s</sub>
 
 The alternate hypothesis:<br />
-H_alternative: there are significant difference (over the significance level 95%) between g_i (i=1,2,3,4) in the unstable cases and the stable cases. That is,<br />
+H_alternative: there are significant difference (over the significance level 95%) between g<sub>i</sub> (i=1,2,3,4) in the unstable cases and the stable cases. That is,<br />
 g<sub>i,u</sub> ≠ g<sub>i,s</sub>
+Similarly, zero differences are at least as extreme as our observed difference!<br />
+So the p-value of our observed data is 0.<br />
+It doesn't matter which significance level we pick; our observed data is statistically significant, and we reject the **H<sub>Null</sub>** and accept **H<sub>Alternatative</sub>**.<br />
+## 3.2.3 Null hypothesis of p<sub>i</sub>
+**Hypothesis formulation** <br />
+
+Our Null hypothesis is:<br />
+H_null: the observed difference in the mean of p<sub>i</sub> (i=1,2,3,4) between the unstable cases and the stable cases is due to chance. That is, <br />
+p<sub>i,u</sub> = p<sub>i,s</sub>
+
+The alternate hypothesis:<br />
+H_alternative: there are significant difference (over the significance level 95%) between p<sub>i</sub> (i=1,2,3,4) in the unstable cases and the stable cases. That is,<br />
+p<sub>i,u</sub> ≠ p<sub>i,s</sub>
+Similarly, he difference percentage is 0.008, which are at least as extreme as our observed difference! So the p-value of our observed data is 0.008, which is less than the significance level 0.05. <br />
+Our observed data is still statistically significant, and we reject the **H<sub>Null</sub>** and accept **H<sub>Alternatative</sub>**.<br />
+# 4 Pre-processing and Training Data
+## 4.1 Customized functions
+Functions were developed to assist with graphical analysis of specific dataset elements (features or observations) and mapping correlation. Please refer to the respective docstrings below for details. Note that all function variable names, by coding principle, start with the "f_" string, allowing for containerized processing within the function execution environment, not affecting global variables.<br />
+*def assessment(f_data, f_y_feature, f_x_feature, f_index=-1):*<br />
+""" Develops and displays a histogram and a scatter plot for a dependent / independent variable pair from a dataframe and, optionally, highlights a specific observation on the plot in a different color (red).<br />
+Also optionally, if an independent feature is not informed, the scatterplot is not displayed.<br />
+Keyword arguments:
+
+f_data      Tensor containing the dependent / independent variable pair.
+            Pandas dataframe
+f_y_feature Dependent variable designation.
+            String
+f_x_feature Independent variable designation.
+            String
+f_index     If greater or equal to zero, the observation denoted by f_index will be plotted in red.
+            Integer
+"""<br />
+* Python codes of this assessment function is not presented.* <br />
+## 4.2 Correlation
+It is important to verify the correlation between each numerical feature and the dependent variable, as well as correlation among numerical features leading to potential undesired colinearity. The heatmap below provides an overview of correlation between the dependent variable (*'stabf'*) and the 12 numerical features. Note that also the alternative dependent variable (*'stab'*) has been included just to give an idea of how correlated it is with 'stabf'. Such correlation is significant (-0.83), as it should be, which reinforces the decision to drop it, anticipated in Section 3. Also, correlation between *'p1'* and its components *'p2', 'p3' and 'p4'* is above average, as expected, but not as high o justify any removal.<br />
+```
+correlation_map(df, 'stabf', 14)
+```
+![download (6)](https://user-images.githubusercontent.com/50253416/234411512-5b6911eb-4a5f-4781-b4c2-3fa8c53c013e.png)
+## 4.3 Segregating train and test sets
+As anticipated, the features dataset will contain all 12 original predictive features, while the label dataset will contain only 'stabf' ('stab' is dropped here).
+
+In addition, as the dataset has already been shuffled, the training set will receive the first 54,000 observations, while the testing set will accommodate the last 6,000.
+
+Even considering that the dataset is large enough and well behaved, the percentage of 'stable' and 'unstable' observations is computed for both training and testing sets, just to make sure that the original dataset distribution is maintained after the split - which proved to be the case.
+
+After splitting, Pandas dataframes and series are transformed into Numpy arrays for the remainder of the exercise.
+```
+# splitting the augmented dataset
+X = df.iloc[:, :12]
+y = df.iloc[:, 13]
+
+X_training = X.iloc[:54000, :]
+y_training = y.iloc[:54000]
+
+X_testing = X.iloc[54000:, :]
+y_testing = y.iloc[54000:]
+
+ratio_training = y_training.value_counts(normalize=True)
+ratio_testing = y_testing.value_counts(normalize=True)
+ratio_training, ratio_testing
+
+# splitting the augmented dataset
+X1 = df1.iloc[:, :12]
+y1 = df1.iloc[:, 13]
+
+X1_training = X1.iloc[:9000, :]
+y1_training = y1.iloc[:9000]
+
+X1_testing = X1.iloc[9000:, :]
+y1_testing = y1.iloc[9000:]
+
+ratio_training_1 = y1_training.value_counts(normalize=True)
+ratio_testing_1 = y1_testing.value_counts(normalize=True)
+ratio_training_1, ratio_testing_1
+```
+## 4.4 Feature assessing and scaling
+In preparation for machine learning, scaling is performed based on (fitted to) the training set and applied (with the 'transform' method) to both training and testing sets.<br />
+```
+# scale the augmented dataset
+scaler = StandardScaler()
+X_training = scaler.fit_transform(X_training)
+X_testing = scaler.transform(X_testing)
+
+# scale the original dataset
+scaler = StandardScaler()
+X_training = scaler.fit_transform(X_training)
+X_testing = scaler.transform(X_testing)
+```
+# 5 Deep Learning
+## 5.1 Model definition
+The artificial neural network (ANN) architecture depicted below is the optimal one evaluated in this study. It reflects an sequential structure with:
+
+one input layer (12 input nodes);
+three hidden layers (24, 24 and 12 nodes, respectively);
+one single-node output layer.
+Alternative architectures were evaluated with variations of the code below. Their performance will be discussed in Chapter 6.
+
+As features are numerical real numbers within ranges, the choice of 'relu' as the activation function for hidden layers seems straightforward. Similarly, as this is a logistic classification exercise, where the output is binary ('0' for 'unstable', '1' for 'stable', following the map coding used in Section 2.2.1), the choice of 'sigmoid' as activation for the output layers seems obvious.
+
+Compilation with 'adam' as optimizer and 'binary_crossentropy' as the loss function follow the same logic. The fitting performance will be assessed using 'accuracy' as the metric of choice.<br />
+![download (7)](https://user-images.githubusercontent.com/50253416/234413173-6d51128b-d418-4e62-a9a0-42a73db14e86.png)
+```
+# ANN initialization
+classifier = Sequential()
+# Input layer and first hidden layer
+classifier.add(Dense(units = 24, kernel_initializer = 'uniform', activation = 'relu', input_dim = 12))
+# Second hidden layer
+classifier.add(Dense(units = 24, kernel_initializer = 'uniform', activation = 'relu'))
+# Third hidden layer
+classifier.add(Dense(units = 12, kernel_initializer = 'uniform', activation = 'relu'))
+# Single-node output layer
+classifier.add(Dense(units = 1, kernel_initializer = 'uniform', activation = 'sigmoid'))
+# ANN compilation
+classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+```
+## 5.2 Model fitting
+Even considering that data is well behaved and in general uniformly distributed, a cross-validation based fitting is proposed. KFold is the cross-validation engine selected, and 10 different validation sets will be utilized.
+```
+### Case 3: Case 1: 24-24-12-1, 10, 50
+# set up the start_time 
+sns.set()
+start_time = datetime.now()
+
+cross_val_round = 1
+print(f'Model evaluation\n')
+
+for train_index, val_index in KFold(10, shuffle=True, random_state=10).split(X_training):
+    x_train, x_val = X_training[train_index], X_training[val_index]
+    y_train ,y_val = y_training[train_index], y_training[val_index]
+    classifier.fit(x_train, y_train, epochs=50, verbose=0)
+    classifier_loss, classifier_accuracy = classifier.evaluate(x_val, y_val)
+    print(f'Round {cross_val_round} - Loss: {classifier_loss:.4f} | Accuracy: {classifier_accuracy * 100:.2f} %')
+    cross_val_round += 1
+    
+end_time = datetime.now()
+cv_duration = end_time - start_time
+print('CV duration (s):', cv_duration)
+```
+## 5.3 Predicting smart grid stability
+After fitting the model to the training set, it is time to extract predictions for the testing set and segregate those above the 'threshold' of 0.5 ('unstable' cases below the threshold, 'stable' cases above it).
+```
+y_pred = classifier.predict(X_testing)
+y_pred[y_pred <= 0.5] = 0
+y_pred[y_pred > 0.5] = 1
+print(classification_report(y_testing, y_pred))
+cm = pd.DataFrame(data=confusion_matrix(y_testing, y_pred, labels=[0, 1]),
+                  index=["Actual Unstable", "Actual Stable"],
+                  columns=["Predicted Unstable", "Predicted Stable"])
+cm
+print(f'Accuracy per the confusion matrix: {((cm.iloc[0, 0] + cm.iloc[1, 1]) / len(y_testing) * 100):.2f}%')
+```
+# 6 Tuning Parameters of ANN
+## 6.1 Tuning parameters
+The architecture and the hyperparameters selected in Chapter 5 led to the best prediction performance on the test set.
+
+In addition, several other combinations were evaluated for both the original dataset with 10,000 observations and the augmented dataset with 60,000 observations. It is important to emphasize that in this comparative assessment no shuffling of any type, at any part of the exercise, was performed, so that the very same testing set was exposed to model after fitting for performance assessment.
+## 6.2 Other cases
+To tune the parameters, we test 11 cases for different ANN architecture (3 hidden layers vs. 2 hidden layers), epoches (10, 20, 50), datasets (augmented vs original). The same ANN or deep learning method will be used for these cases as that of Case 3 in Chapter 5. With Case 3 in Chapter 5, the performance of each model are summarized in the table below. 
+![Picture1](https://user-images.githubusercontent.com/50253416/234435741-f5bcef89-c2e2-4a34-aa69-1ebec270c907.png)
+## 6.3 Tuning parameters comparision
+The ratio of unstable ans stable data is about 2:1 for all cases. Therefore, the accuracy and F1 score are listed to evaluate the performance of each model. F1 score is the go to metric for measuring the performance of classification models. This is mainly due to it’s ability to relay true performance on both balanced and imbalanced datasets. But also because it takes into account both the precision and recall ability of the model, making it a well rounded assessor of model performance.
+
+From Table 1 below, we know all cases have the F1 Score within the range of (0.97, 0.99) and the accuracy between 96.6% - 98.3% for this classification problem. The architecture network are three or two hidden layers, which have slight impacts on the F1 score (accuracy) and computing time. It seems that three layers will help the F1 score slightly. The augmented dataset (obtained by permutating the original data) also increases the F1 score and the accuracy slightly. But, the augmented data consume about 6 times of computing time than the original dataset, which is proportional to the size of datasets.
+
+From the training time, F1 score, and the accuracy, we can conclude that the parameters of Case 1 in the augmented dataset is preferrable to predict the stability of the power grids. 
+# 7. Conclusions
+In this project, the basic reference 4-node star power grid was studied for the prediction of its stability by the deep learning, specifically artificial neural network (ANN). In this power grid system, there is one power plant generating electricity that was supplied to the end users at three nodes. The original dataset (10,000 observations) and the augmented dataset (60,000 observations) were provided by KIT to support the training and testing 12 models with different parameters. Through the ANN method, the conclusions below could be drawn:
+1. All cases had the F1 Score within the range of (0.97, 0.99) and the accuracy between 96.6% - 98.3% for this classification problem.
+2. The hidden layers of the architecture network had slight impacts on the F1 score (accuracy) and computing time. It seems that three layers helped the F1 score slightly.
+3. The augmented dataset also increases the F1 score and the accuracy slightly. But, the augmented data consume was proportional to the size of dataset.
+4. For this basic power grid, the model with two hidden layers, 10 folds and 10 epoches on the augmented dataset is preferrable to predict the power grid stability.
+# 8. Future Work
+For this basic 4-node star power grid, the ANN model has very good F1 score (accuracy) to predict the stability. To apply for this ANN model into the real operation of power grids, we still have more challenging tasks to solve.
+1. More nodes of power plants and end users.
+2. Solar energy implementation in the commercial and residential users.
+3. More baterry-based electricity storage implementation.
+4. More flexible electricity price strategies
+# 9. Reference
+[1] Towards Concise Models of Grid Stability. 2018 IEEE International Conference on Communications, Control, and Computing Technologies for Smart Grids.  Vadim Arzamasov, Klemens Böhm, Patrick Jochem.
+[2] Taming Instabilities in Power Grid Networks by Decentralized Control. The European Physical Journal, Special Topics, 225, 569–582 (2016). B. Schafer, C. Grabow, S. Auer, J. Kurths, D. Witthaut, and M. Timme.
