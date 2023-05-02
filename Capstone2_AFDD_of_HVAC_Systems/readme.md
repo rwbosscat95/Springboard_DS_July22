@@ -22,12 +22,27 @@ In the exploratory data analysis, we found there are six types of faults that we
 The histograms of outdoor air damper control signal (0-1) were also plotted for thenormal conditions and the fault conditions in Figure 3a and 3b. The data collecting days were very close and the weather was similar for the normal conditions and the fault conditions. The difference of the outdoor air damper control signal was also plotted in Figure 4. It was checked that 0.00% of the differences were at least as extreme as (95%) our observed difference. We reject the H_Null and accept H_ Alternatative . We conclude that the fault1 does impact the OA damper control signal.
 
 ![report fig2](https://user-images.githubusercontent.com/50253416/235581108-66ebf3b3-f7a1-413e-a304-f9cafee36f8f.png)<br />
-**Figure 2: Count of Normal (Fault Truth = 0) and Fault (Fault Truth = 1) scenarios**
+**Figure 2: Count of Normal (Fault Truth = 0) and Fault (Fault Truth = 1) scenarios**<br />
 
 ![report fig3](https://user-images.githubusercontent.com/50253416/235581558-05344db1-6796-4f91-ac6e-1cdd0df7a650.png)<br />
-**Figure 3: Histograms of OA damper control signal (a) normal conditions (b) fault condition**
+**Figure 3: Histograms of OA damper control signal (a) normal conditions (b) fault condition**<br />
 
 ![report fig4](https://user-images.githubusercontent.com/50253416/235581241-afdfad48-d5c3-444c-a707-91e43cafc42d.png)<br />
-**Figure 4: Histograms of OA damper control signal difference**
+**Figure 4: Histograms of OA damper control signal difference**<br />
 
+To visualize the relationships of the features with the fault truth, the heatmap of the features was plotted in Figure 5. The top four features on the heatmap are listed here:<br />
+● the mixed air temperature (0.41)<br />
+● return air damper control signal (0.41)<br />
+● outdoor air temperature (0.35)<br />
+● cooling valve control signal (0.25)<br />
+From the domain knowledge of HVAC, theoretically we knew that the OAT sensors have impacts, maybe significantly, on these four features.<br />
 
+![report fig5-1](https://user-images.githubusercontent.com/50253416/235581732-9fbec082-dfae-43c9-b897-72fcd1f707fc.png)<br />
+**Figure 5: Heatmap of the features with the Fault Truth**<br />
+Figure 6 showed the outdoor air damper control signal with OAT for a typical air handling unit (AHU) serving a large office building that is the same type of AHU as investigated in this project. The data of outdoor air damper control signals were plotted with OAT in Figure 7 for the normal (blue dots) and fault (orange dots) conditions. We knew that most of the operation was in the free cooling mode, in which the outdoor air damper modulated the openness to maintain the supply air temperature at its setpoint (55 °F). Except for some operation points that AHU switched between the occupancy and un-occupancy modes, the fault conditions (orange dots) shifted 2 °F to the right side than the normal conditions (blue dots). It indicated that the OAT sensor offset 2 °F higher than the actual values.<br />
+
+![report fig6](https://user-images.githubusercontent.com/50253416/235581941-8b247be5-04bf-4e58-ba3f-56e692fbe7d4.png)<br />
+**Figure 6: Outdoor air damper control signal vs OAT for a typical AHU**<br />
+
+![report fig7](https://user-images.githubusercontent.com/50253416/235582002-f6efb3c2-8332-4bae-a207-3629fc75d1c1.png)<br />
+**Figure 7: Outdoor air damper control signal vs OAT under the normal and fault conditions**<br />
