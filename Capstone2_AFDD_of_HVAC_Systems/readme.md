@@ -46,3 +46,69 @@ Figure 6 showed the outdoor air damper control signal with OAT for a typical air
 
 ![report fig7](https://user-images.githubusercontent.com/50253416/235582002-f6efb3c2-8332-4bae-a207-3629fc75d1c1.png)<br />
 **Figure 7: Outdoor air damper control signal vs OAT under the normal and fault conditions**<br />
+
+## 4. Model Selection
+For the selected fault detection, six machine learning classification models were compared. They were logistic regression, KNN, SVM, Random Forest, Naive Bayes, and Gradient Boost.<br />
+### 4.1 Logistic Regression: C
+Logistic regression models a relationship between predictor variables and a categorical response variable. Logistic regression helps us estimate a probability of falling into a certain level of the categorical response given a set of predictors. For this project, this is a binary logistic regression problem. It follows the formula below.
+
+![formula 1](https://user-images.githubusercontent.com/50253416/235590655-3257b7f6-c007-47f6-8546-1ac55e92fa8e.png)<br />
+C: inverse of L2 regularization strength ( λ ) included in logistic regression loss function
+
+### 4.2 k-nearest neighbors (KNN)
+KNN is a non-parametric, supervised learning classifier, which uses proximity to make classifications or predictions about the grouping of an individual data point. It is typically used as a classification algorithm, working off the assumption that similar points can be found near one another.<br />
+
+### 4.3 Support vector machine (SVM)
+SVMs are a set of supervised learning methods used for classification, regression and outliers detection. The advantages of support vector machines are:
+- Effective in high dimensional spaces. 
+- Still effective in cases where number of dimensions is greater than the number of samples.
+- Uses a subset of training points in the decision function (called support vectors), so it is also memory efficient.
+- Versatile: different Kernel functions can be specified for the decision function. Common kernels are provided, but it is also possible to specify custom kernels.
+
+The disadvantages of support vector machines include:
+- If the number of features is much greater than the number of samples, avoid over-fitting in choosing Kernel functions and regularization term is crucial.
+- SVMs do not directly provide probability estimates, these are calculated using an expensive five-fold cross-validation (see Scores and probabilities, below).
+
+### 4.4 Random Forest
+Random forest is a commonly-used machine learning algorithm, which combines the output of multiple decision trees to reach a single result. Its ease of use and flexibility have fueled its adoption, as it handles both classification and regression problems.
+
+### 4.5 Naive Bayes
+Naive Bayes is a simple technique for constructing classifiers: models that assign class labels to problem instances, represented as vectors of feature values, where the class labels are drawn from some finite set.
+
+### 4.6 Gradient Boost
+Gradient boosting is a machine learning technique used in regression and classification tasks, among others. It gives a prediction model in the form of an ensemble of weak prediction models, which are typically decision trees.
+
+### 4.7 Model Evaluation
+The model accuracy scores and the ROC-AUC scores were plotted in Figure 8. Obviously, KNN, Random Forest, and Gradient Boost had the model accuracy scores above 0.985, which were significantly higher than the other three models (about 0.55). It has a similar trend for ROC-AUC scores as the model accuracy scores. From Figure 8(b), the training scores were quite close to the test scores for each model. The models investigated were neither overfit or underfit the dataset .<br />
+
+![fig 8a](https://user-images.githubusercontent.com/50253416/235589060-2bc24f8c-cb6e-4603-8859-38497a389b6f.png)<br />
+![report fig8B](https://user-images.githubusercontent.com/50253416/235589129-8cffa5dd-c00b-4b8d-b504-8ee43ac3b3b1.png)<br />
+**Figure 8: Model scores comparison (a) model accuracy scores (b) ROC-AUC scores**
+
+We selected two models - Random Forest (RF) and Gradient Boost (GB) to optimize the hyperparameters by grid search cv, which increased the model accuracy scores and the ROC-AUC scores slightly. Then, the features were ranked based on the RF and GB models, which were plotted in Figure 9. The relative importances was slightly different in values, but the rankings were exactly same for the two models.<br />
+
+The ROC curve for each model almost vertically shot up from zero to nearly one (about 0.9992) with the false positive rate (FPR), which showed that the models of RF and GB are robust and accurate as one of the ML classification models in this project.
+
+![report fig9A](https://user-images.githubusercontent.com/50253416/235589331-8749e407-e766-43cc-ad48-84e330d4f33f.png)
+![report fig9B](https://user-images.githubusercontent.com/50253416/235589344-d550b795-c9c1-427c-a450-e92f4f9b9ae3.png)<br />
+**Figure 9: Feature ranking based on ML models (a) Random Forest (b) Gradient Boost**
+
+![report fig10](https://user-images.githubusercontent.com/50253416/235589408-355bd166-18cd-4a51-a35a-6566c3a6cb4d.png)
+**Figure 10: ROC curves based on ML models (a) Random Forest (b) Gradient Boost**
+
+## 5. Takeaways
+Evaluating the performance of a model by training and testing on the same dataset can lead to the overfitting. Hence the model evaluation is based on splitting the dataset into train and validation set. But the performance of the prediction result depends upon the random choice of the pair of (train,validation) set. Inorder to overcome that, the Cross-Validation procedure is used where under the k-fold CV approach, the training set is split into k smaller
+sets, where a model is trained using k-1 of the folds as training data and the model is validated on the remaining part.<br />
+
+We have evaluated each model in terms of model accuracy score, and 'ROC-AUC' score for both the training and test data, and plotted them. The two best performing models are the Random forest and the Gradient boost. Both are the ensemble model, based on decision trees.<br />
+
+Next, we have carried out the grid search CV for the hyperparameter tuning for both the models separately. This step was the most time consuming one in terms of computation. (The RF model took much longer time). With the result of the optimized hyperparameters, we have again fitted the two models, and got the predictions separately. <br />
+
+We have evaluated the ROC-AUC scores with the optimized hyperparameters. Clearly, the model performance improved with the optimized parameters. The final ROC-AUC scores for both RF and the GB are 0.99941 and 0.99916.<br />
+
+## 6. Future Research
+This project enlightened me on the classification models to detect faults in the air handling units for a large office building. While my models were valuable to this specific project or the dataset that were built by experiments and simulation, it is difficult to say how useful they would be in the real application if one fault occurs. We would like to know how much data is needed to detect a single fault.<br />
+
+The faults in this project were mimicked by experiments or simulation. If a single fault is not steady or stable, it is interesting if the models developed in this project are applicable. Furthermore, we would like to know how the models respond to the multi faults occurring at the same time. <br />
+
+Finally, the current classification models were developed for fault detection. A question will arise: how to diagnose a single fault or integrated faults in the real application. Especially for the integrated faults, how to decouple the faults and find the root cause will be more challenging.
