@@ -13,4 +13,21 @@ The raw dataset of the first fault from LBNL contained 272,1612 rows with 18 col
 
 The histograms of features are dependent variables were plotted for further investigation. The last sub-plot showed that there were 5 times more fault scenarios (230,000 rows) than the normal scenarios in the whole dataset. These provide sufficient train data to establish a robust fault detection model and sufficient test data to validate the accuracy of that model. For other data, we also have more than 3000 rows of data at the fault scenarios, which provide sufficient train and test data for the future investigation.
 
+![report fig1-1](https://user-images.githubusercontent.com/50253416/235580742-66b86183-4501-484d-b08c-d7ee628ce13c.png)
+**Figure 1: Subplots of the features and dependent variable**
+
+## 3. Exploratory Data Analysis
+In the exploratory data analysis, we found there are six types of faults that were the outdoor air temperature (OAT) sensors off set +/- 1, 2, and 3 degree Fahrenheit than the true values. We picked up the scenarios that the OAT sensors off set 2 degree Fahrenheit than the true values as the fault scenarios for this project. From Figure 2, we could see that there were about 38,000 rows of observation for both the normal and the fault scenarios that we investigated in this project.
+
+The histograms of outdoor air damper control signal (0-1) were also plotted for thenormal conditions and the fault conditions in Figure 3a and 3b. The data collecting days were very close and the weather was similar for the normal conditions and the fault conditions. The difference of the outdoor air damper control signal was also plotted in Figure 4. It was checked that 0.00% of the differences were at least as extreme as (95%) our observed difference. We reject the H_Null and accept H_ Alternatative . We conclude that the fault1 does impact the OA damper control signal.
+
+![report fig2](https://user-images.githubusercontent.com/50253416/235581108-66ebf3b3-f7a1-413e-a304-f9cafee36f8f.png)<br />
+**Figure 2: Count of Normal (Fault Truth = 0) and Fault (Fault Truth = 1) scenarios**
+
+![report fig3](https://user-images.githubusercontent.com/50253416/235581558-05344db1-6796-4f91-ac6e-1cdd0df7a650.png)<br />
+**Figure 3: Histograms of OA damper control signal (a) normal conditions (b) fault condition**
+
+![report fig4](https://user-images.githubusercontent.com/50253416/235581241-afdfad48-d5c3-444c-a707-91e43cafc42d.png)<br />
+**Figure 4: Histograms of OA damper control signal difference**
+
 
